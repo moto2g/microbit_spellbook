@@ -1,0 +1,12 @@
+{
+	"name": "predict",
+	"version": "0.0.0",
+	"description": "motion detector",
+	"keywords": [],
+	"author": "",
+	"license": "Apache-2.0",
+	"dependencies": {
+		"microbit": "lancaster-university/microbit#v2.1.1"
+	},
+	"bin": "./source"
+}
