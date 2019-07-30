@@ -4,7 +4,9 @@ MicroBit uBit;
 
 int status = 0;
 
+#define INTERVAL_OF_GET 80
 #define NUM_OF_VALUES 6
+
 int xValues[NUM_OF_VALUES];
 int yValues[NUM_OF_VALUES];
 int zValues[NUM_OF_VALUES];
@@ -35,9 +37,21 @@ void clear()
 	}
 }
 
+void shift()
+{
+	int i;
+	for(i = NUM_OF_VALUES - 1; i > 0; i--) {
+		xValues[i] = xValues[i - 1];
+		yValues[i] = yValues[i - 1];
+		zValues[i] = zValues[i - 1];
+	}
+}
+
 int main()
 {
+	
 	uBit.init();
+	
 	uBit.messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_EVT_ANY, onButton);
 	uBit.messageBus.listen(MICROBIT_ID_BUTTON_B, MICROBIT_EVT_ANY, onButton);
 	
@@ -58,6 +72,6 @@ int main()
 		}
 		uBit.serial.printf("%d\r\n", status);
 		
-		uBit.sleep(80);
+		uBit.sleep(INTERVAL_OF_GET);
 	}
 }

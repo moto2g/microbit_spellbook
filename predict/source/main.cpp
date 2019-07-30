@@ -7,8 +7,12 @@ extern "C" {
 
 MicroBit uBit;
 
-#define NUM_OF_VALUES 6
-#define NUM_OF_CLASS 4
+#define INTERVAL_OF_GET 80 /* åŠ é€Ÿåº¦ãƒ‡ãƒ¼ã‚¿ã®å–å¾—é–“éš” */
+#define NUM_OF_VALUES 6  /* ä½•å€‹ã®ãƒ‡ãƒ¼ã‚¿ã‚’1ã‚»ãƒƒãƒˆã¨ã™ã‚‹ã‹ */
+#define NUM_OF_CLASS 4  /* åˆ†é¡ã™ã‚‹ã‚¯ãƒ©ã‚¹æ•° */
+#define BORDER 93 /* ä½•ï¼…ä»¥ä¸Šã®ç¢ºä¿¡åº¦ãªã‚‰æ¡ç”¨ã™ã‚‹ã‹ */
+#define GROUP_ID 8 /* ç„¡ç·šé€šä¿¡ã®ã‚°ãƒ«ãƒ¼ãƒ— */
+
 int xValues[NUM_OF_VALUES];
 int yValues[NUM_OF_VALUES];
 int zValues[NUM_OF_VALUES];
@@ -48,18 +52,23 @@ int main()
 	int i = 0;
 
 	void *context = nnablart_mainruntime_allocate_context(MainRuntime_parameters);
-	
 	uBit.init();
+
 	uBit.radio.enable();
 
-	uBit.serial.printf("Spell Book (Size In:%d Out:%d)\r\n", NNABLART_MAINRUNTIME_INPUT0_SIZE, NNABLART_MAINRUNTIME_OUTPUT0_SIZE);	
+	uBit.radio.setGroup(GROUP_ID);
+
+	uBit.display.setBrightness(10);
+	uBit.serial.printf("Spell Book In:%d Out:%d\r\n", NNABLART_MAINRUNTIME_INPUT0_SIZE, NNABLART_MAINRUNTIME_OUTPUT0_SIZE);	
+	uBit.display.print("Book");
 	uBit.sleep(2000);
 
-	uBit.display.print('o');
+	uBit.display.clear();
+
 	
 	while(1)
 	{
-		// ‰Á‘¬“x‚Ì’l‚ğƒŠƒXƒg‚É‚½‚ß‚Ä‚¨‚­
+		// åŠ é€Ÿåº¦ã®å€¤ã‚’ãƒªã‚¹ãƒˆã«ãŸã‚ã¦ãŠã
 		int accX = uBit.accelerometer.getX();
 		int accY = uBit.accelerometer.getY();
 		int accZ = uBit.accelerometer.getZ();
@@ -69,7 +78,7 @@ int main()
 		yValues[0] = accY;
 		zValues[0] = accZ;
 
-		// NN‚Éƒf[ƒ^‚ğ“n‚µ‚Äƒ‚[ƒVƒ‡ƒ“‚ğ”F¯‚·‚é
+		// NNã«ãƒ‡ãƒ¼ã‚¿ã‚’æ¸¡ã—ã¦ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚’èªè­˜ã™ã‚‹
 		float* input_buf = nnablart_mainruntime_input_buffer(context, 0);
 		float* output_buf = nnablart_mainruntime_output_buffer(context, 0);
 
@@ -90,49 +99,47 @@ int main()
 				predict_index = i;
 			}
 		}
-		// ƒXƒRƒA‚ª—Ç‚­‚È‚¢ê‡‚Í”F¯–³‚µ‚Æ‚·‚é
-		if (max_score < 93) predict_index = 0;
+		if (max_score < BORDER) predict_index = 0;
 
 		// 
 		switch (predict_index){
 			case 0:
-				// ƒ‚[ƒVƒ‡ƒ“‚È‚µ
+				// ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãªã—
 				break;
 			case 1:
 				printList("motion1");
 				uBit.display.print(1);
 				uBit.radio.datagram.send("1");
 				clear();
-				uBit.sleep(500);
+				uBit.sleep(2500);
+				uBit.display.clear();
 				break;
 			case 2:
 				printList("motion2");
 				uBit.radio.datagram.send("2");
 				uBit.display.print(2);
 				clear();
-				uBit.sleep(500);
+				uBit.sleep(2500);
+				uBit.display.clear();
 				break;
 			case 3:
 				printList("motion3");
 				uBit.radio.datagram.send("3");
 				uBit.display.print(3);
 				clear();
-				uBit.sleep(500);
+				uBit.sleep(2500);
+				uBit.display.clear();
 				break;
 		}
+		// é€ä¿¡ãƒ†ã‚¹ãƒˆç”¨
 		if (uBit.buttonAB.isPressed()) {
-			uBit.radio.datagram.send("3");
-			uBit.serial.printf("send 3\r\n");
-		}
-		else if (uBit.buttonA.isPressed()) {
-			uBit.radio.datagram.send("1");
-			uBit.serial.printf("send 1\r\n");
-		}
-		else if (uBit.buttonB.isPressed()) {
-			uBit.radio.datagram.send("2");
-			uBit.serial.printf("send 2\r\n");
+			uBit.serial.printf("send 4\r\n");
+			uBit.radio.datagram.send("4");
+			uBit.display.print(4);
+			uBit.sleep(2500);
+			uBit.display.clear();
 		}
 		
-		uBit.sleep(80);
+		uBit.sleep(INTERVAL_OF_GET);
 	}
 }
