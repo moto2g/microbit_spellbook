@@ -1,6 +1,8 @@
 # まほうのしょ / microbit_spellbook
 motion detector with micro:bit using neural network libraries<br>
 micro:bitにSony Neural Network Librariesで生成したAIを載せてモーション検出する<br>
+![top-page](https://raw.githubusercontent.com/moto2g/microbit_spellbook/image/microbit_spellbook.jpg)
+
 
 ## 必要なもの
 - micro:bit x 2台
